@@ -1,91 +1,81 @@
-from flask import Flask, render_template,request
+from flask import Flask, request, send_file
 import os
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static')
-  # 📁 پوشه ذخیره‌سازی عکس‌ها
 
-b = False
 @app.route('/')
 def home():
-
-
-    return render_template('index.html')
+    return send_file("index.html")
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    return send_file("about.html")
 
 @app.route("/vibe_Post")
 def vibe_Post():
-    return render_template("vibe_Post.html")
+    return send_file("vibe_Post.html")
+
 @app.route("/feel_map")
 def feel_map():
-    return render_template("feel_map.html")
+    return send_file("feel_map.html")
 
 @app.route("/feel_room")
 def feel_room():
-    return render_template("feel_room.html")
-
-
+    return send_file("feel_room.html")
 
 @app.route("/open_sadness")
 def open_sadness():
-    return render_template("tears.html")
-
+    return send_file("tears.html")
 
 @app.route("/open_joy")
 def open_joy():
-    return render_template("joy.html")
+    return send_file("joy.html")
 
 @app.route("/open_love")
 def open_love():
-    return render_template("love.html")
+    return send_file("love.html")
 
 @app.route("/open_peace")
 def open_peace():
-    return render_template("peace.html")
+    return send_file("peace.html")
 
 @app.route("/open_stress")
 def open_stress():
-    return render_template("stress.html")
+    return send_file("stress.html")
 
 @app.route("/open_hope")
 def open_hope():
-    return render_template("hope.html")
+    return send_file("hope.html")
 
 @app.route("/open_despair")
 def open_despair():
-    return render_template("despair.html")
+    return send_file("despair.html")
 
 @app.route("/open_pride")
 def open_pride():
-    return render_template("pride.html")
+    return send_file("pride.html")
 
 @app.route("/open_anxiety")
 def open_anxiety():
-    return render_template("anxiety.html")
+    return send_file("anxiety.html")
 
 @app.route("/open_loneliness")
 def open_loneliness():
-    return render_template("loneliness.html")
+    return send_file("loneliness.html")
 
 @app.route("/open_fear")
 def open_fear():
-    return render_template("fear.html")
+    return send_file("fear.html")
 
 @app.route("/open_anger")
 def open_anger():
-    return render_template("anger.html")
-app.route('/profile', methods = ['GET','POST'])
-# def profile():
-#     return render_template('profile.html')
+    return send_file("anger.html")
+
 from werkzeug.utils import secure_filename
 
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
-    from werkzeug.utils import secure_filename
-
     content = ""
     if os.path.exists("pro.txt"):
         with open("pro.txt", 'r') as file:
@@ -93,7 +83,9 @@ def profile():
 
     if request.method == "GET":
         if content == "":
-            return render_template('profile.html') + '''
+            with open("profile.html") as f:
+                base = f.read()
+            return base + '''
                 <body>
                     <form method="POST" action="/profile" enctype="multipart/form-data">
                         <input type="text" name="namee" placeholder="Your name" required>
@@ -106,7 +98,9 @@ def profile():
                     </form>
                 </body>'''
         else:
-            return render_template('profile.html') + '''
+            with open("profile.html") as f:
+                base = f.read()
+            return base + '''
                 <body>
                     <form method="POST" action="/profile" enctype="multipart/form-data">
                         <input type="email" name="emaill" placeholder="Your email" required>
@@ -127,9 +121,9 @@ def profile():
             image = request.files.get('imgg')
 
             if len(pass1) < 8 or len(pass1) > 15:
-                return render_template('sign_up.html') + "<h1>Password must be 8-15 characters</h1>"
+                return send_file("sign_up.html") + "<h1>Password must be 8-15 characters</h1>"
             elif pass1 != pass2:
-                return render_template('sign_up.html') + "<h1>Passwords do not match</h1>"
+                return send_file("sign_up.html") + "<h1>Passwords do not match</h1>"
 
             username = ''.join([str(i) + '!' if i % 3 == 0 else '' for i in range(len(pass1))])
             username += ''.join(['@' for i in range(len(pass1)) if i % 5 == 0])
@@ -140,7 +134,7 @@ def profile():
             if image and image.filename:
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], "profile.jpg"))
 
-            return render_template('sign_up.html') + f"<h1>Welcome {name} {last_name}! Username: {username}</h1>"
+            return send_file("sign_up.html") + f"<h1>Welcome {name} {last_name}! Username: {username}</h1>"
         else:
             emaill = request.form.get('emaill')
             pass1 = request.form.get('pass1')
@@ -152,21 +146,13 @@ def profile():
                 dic[key] = value
 
             if dic.get('email') != emaill:
-                return render_template('sign_up.html') + "<h1>Wrong email</h1>"
+                return send_file("sign_up.html") + "<h1>Wrong email</h1>"
             elif dic.get('password') != pass1:
-                return render_template('sign_up.html') + "<h1>Wrong password</h1>"
+                return send_file("sign_up.html") + "<h1>Wrong password</h1>"
             elif dic.get('username') != username:
-                return render_template('sign_up.html') + "<h1>Wrong username</h1>"
+                return send_file("sign_up.html") + "<h1>Wrong username</h1>"
             else:
-                return render_template('sign_up.html') + f"<h1>Welcome {dic.get('name')}</h1><img src='/static/profile.jpg' width='300'>"
-            
+                return send_file("sign_up.html") + f"<h1>Welcome {dic.get('name')}</h1><img src='/static/profile.jpg' width='300'>"
 
-            
-
-    
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-
-
+    app.run(debug=True)
